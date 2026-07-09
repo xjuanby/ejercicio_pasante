@@ -17,13 +17,23 @@ if [ ! -d "vendor" ]; then
 fi
 
 # Configura conexion a PostgreSQL en .env
+# (usa -E con "^#?\s*" porque el .env por defecto de Laravel trae estas
+# variables comentadas, ya que por defecto usa SQLite)
 if [ -f ".env" ]; then
-  sed -i "s/^DB_CONNECTION=.*/DB_CONNECTION=pgsql/" .env
-  sed -i "s/^DB_HOST=.*/DB_HOST=${DB_HOST:-db}/" .env
-  sed -i "s/^DB_PORT=.*/DB_PORT=${DB_PORT:-5432}/" .env
-  sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE:-pasante}/" .env
-  sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME:-pasante}/" .env
-  sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD:-secret}/" .env
+  sed -i -E "s/^#?[[:space:]]*DB_CONNECTION=.*/DB_CONNECTION=pgsql/" .env
+  sed -i -E "s/^#?[[:space:]]*DB_HOST=.*/DB_HOST=${DB_HOST:-db}/" .env
+  sed -i -E "s/^#?[[:space:]]*DB_PORT=.*/DB_PORT=${DB_PORT:-5432}/" .env
+  sed -i -E "s/^#?[[:space:]]*DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE:-pasante}/" .env
+  sed -i -E "s/^#?[[:space:]]*DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME:-pasante}/" .env
+  sed -i -E "s/^#?[[:space:]]*DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD:-secret}/" .env
+
+  # Por si alguna variable no existia en absoluto en el .env
+  grep -q "^DB_CONNECTION=" .env || echo "DB_CONNECTION=pgsql" >> .env
+  grep -q "^DB_HOST=" .env || echo "DB_HOST=${DB_HOST:-db}" >> .env
+  grep -q "^DB_PORT=" .env || echo "DB_PORT=${DB_PORT:-5432}" >> .env
+  grep -q "^DB_DATABASE=" .env || echo "DB_DATABASE=${DB_DATABASE:-pasante}" >> .env
+  grep -q "^DB_USERNAME=" .env || echo "DB_USERNAME=${DB_USERNAME:-pasante}" >> .env
+  grep -q "^DB_PASSWORD=" .env || echo "DB_PASSWORD=${DB_PASSWORD:-secret}" >> .env
 fi
 
 # Genera APP_KEY si falta

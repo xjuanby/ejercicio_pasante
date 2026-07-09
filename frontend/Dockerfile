@@ -1,4 +1,4 @@
-FROM node:20-bullseye
+FROM node:22-bullseye
 
 # CLI de Angular disponible globalmente
 RUN npm install -g @angular/cli@latest
